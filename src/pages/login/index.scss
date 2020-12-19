@@ -1,0 +1,25 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+
+    .title {
+        font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        text-align: center;
+        margin: 0 auto;
+        font-size: 33px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 44px;
+    }
+
+    .desc {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.45);
+        margin-top: 12px;
+        margin-bottom: 40px;
+    }
+}

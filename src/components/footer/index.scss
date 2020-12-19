@@ -1,0 +1,27 @@
+.login-footer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    color: rgba(0, 0, 0, 0.85);
+    padding: 0 16px;
+    text-align: center;
+    height: 80px;
+
+    .links {
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        a {
+            color: rgba(0, 0, 0, 0.45);
+
+            &:not(:nth-child(2)) {
+                width: 56px;
+            }
+        }
+    }
+
+    .copyright {
+        color: rgba(0, 0, 0, 0.45);
+    }
+}
