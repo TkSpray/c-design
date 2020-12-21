@@ -1,16 +1,5 @@
 import React, { useState } from 'react'
-import {
-    Table,
-    Tag,
-    Space,
-    Button,
-    message,
-    Popconfirm,
-    Drawer,
-    Divider,
-    Descriptions,
-    Empty
-} from 'antd'
+import { Table, Tag, Space, Button, message, Popconfirm, Drawer, Divider, Descriptions } from 'antd'
 import { useHistory } from 'react-router-dom'
 import './index.scss'
 import { PlusOutlined } from '@ant-design/icons'
@@ -42,7 +31,6 @@ const Overview = props => {
             dataIndex: 'course',
             key: 'course'
         },
-
         {
             title: '专业方向',
             dataIndex: 'direction',
@@ -77,11 +65,20 @@ const Overview = props => {
             dataIndex: 'tel',
             key: 'tel'
         },
-
+        {
+            title: '课题状态',
+            dataIndex: 'status',
+            key: 'status',
+            render: (text, record) => (
+                <Tag color={record.status ? 'green' : 'warning'}>
+                    {record.status ? '已完成' : '未完成'}
+                </Tag>
+            )
+        },
         {
             title: '操作',
             key: 'action',
-
+            align: 'center',
             render: (text, record) => (
                 <Space size="middle">
                     <Popconfirm
@@ -90,7 +87,7 @@ const Overview = props => {
                         okText="确认"
                         cancelText="取消"
                     >
-                        <Button type="primary" danger>
+                        <Button danger type="text">
                             删除
                         </Button>
                     </Popconfirm>
@@ -111,7 +108,8 @@ const Overview = props => {
             course: '综合课程设计I',
             direction: ['数字信息处理', '系统与技术'],
             grade: ['大一', '大二', '大三', '大四'],
-            mession: '擦擦擦测测'
+            mession: '擦擦擦测测',
+            status: 1
         },
         {
             key: '2',
@@ -124,7 +122,8 @@ const Overview = props => {
             course: '综合课程设计I',
             direction: ['数字动漫'],
             grade: ['大一'],
-            mession: '擦擦擦测测'
+            mession: '擦擦擦测测',
+            status: 1
         },
         {
             key: '3',
@@ -137,7 +136,8 @@ const Overview = props => {
             course: '综合课程设计I',
             direction: ['数字动漫', '网络安全'],
             grade: ['大一', '大二'],
-            mession: '擦擦擦测测'
+            mession: '擦擦擦测测',
+            status: 0
         },
         {
             key: '4',
@@ -150,7 +150,8 @@ const Overview = props => {
             course: '综合课程设计I',
             direction: ['数字动漫'],
             grade: ['不限'],
-            mession: '擦擦擦测测'
+            mession: '擦擦擦测测',
+            status: 0
         },
         {
             key: '5',
@@ -163,7 +164,8 @@ const Overview = props => {
             course: '综合课程设计I',
             direction: ['数字动漫', '数字信息处理'],
             grade: ['大一'],
-            mession: '擦擦擦测测'
+            mession: '擦擦擦测测',
+            status: 1
         },
         {
             key: '6',
@@ -172,6 +174,7 @@ const Overview = props => {
             mail: 'fuchong@uestc.com',
             department: '信息与软件工程学院',
             role: ['老师'],
+            status: 0,
             topic: '后台管理系统',
             course: '综合课程设计I',
             direction: ['数字动漫'],
@@ -193,13 +196,13 @@ const Overview = props => {
             </div>
             <Table columns={columns} dataSource={data} />
             <Drawer
-                width={600}
+                width={360}
                 placement="right"
                 closable={false}
                 onClose={onClose}
                 visible={drawerShow}
             >
-                <Descriptions title="课题信息" column={2}>
+                <Descriptions title="课题信息" column={1}>
                     <Descriptions.Item label="课题名称">{detail.topic}</Descriptions.Item>
                     <Descriptions.Item label="专业方向">
                         {detail.direction?.map(tag => {
@@ -212,13 +215,22 @@ const Overview = props => {
                             return <Tag key={tag}>{tag}</Tag>
                         })}
                     </Descriptions.Item>
+                    <Descriptions.Item label="课题状态">
+                        {
+                            <Tag color={detail.status ? 'green' : 'red'}>
+                                {detail.status ? '已完成' : '未完成'}
+                            </Tag>
+                        }
+                    </Descriptions.Item>
+                </Descriptions>
+                <Descriptions column={1}>
+                    <Descriptions.Item label="主要任务">{detail.mession}</Descriptions.Item>
                 </Descriptions>
                 <Divider />
-                <Descriptions title="教师信息" column={2}>
+                <Descriptions title="教师信息" column={1}>
                     <Descriptions.Item label="姓名">{detail.name}</Descriptions.Item>
                     <Descriptions.Item label="手机号">{detail.tel}</Descriptions.Item>
                     <Descriptions.Item label="邮箱">{detail.mail}</Descriptions.Item>
-                    <Descriptions.Item label="学院">{detail.department}</Descriptions.Item>
                 </Descriptions>
                 <Divider />
             </Drawer>

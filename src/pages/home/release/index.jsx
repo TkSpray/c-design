@@ -127,7 +127,7 @@ const Release = props => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Form.Item name="mession" label="主要任务" rules={[{ required: true }]}>
+                    <Form.Item name="mession" label="主要任务">
                         <Input.TextArea
                             placeholder="请输入主要任务"
                             allowClear

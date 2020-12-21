@@ -70,11 +70,6 @@ const UserManage = props => {
             key: 'mail'
         },
         {
-            title: '学院',
-            dataIndex: 'department',
-            key: 'department'
-        },
-        {
             title: '角色',
             key: 'role',
             dataIndex: 'role',
@@ -208,8 +203,8 @@ const UserManage = props => {
                     <Form.Item name="mail" label="邮箱" rules={[{ required: true }]}>
                         <Input placeholder="请输入邮箱地址" />
                     </Form.Item>
-                    <Form.Item name="department" label="学院" rules={[{ required: true }]}>
-                        <Select placeholder="请选择学院" allowClear options={departmentOptions} />
+                    <Form.Item name="password" label="密码" rules={[{ required: true }]}>
+                        <Input placeholder="请输入账户密码" />
                     </Form.Item>
                     <Form.Item name="role" label="管理员权限" initialValue={false}>
                         <Switch />
