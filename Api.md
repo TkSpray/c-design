@@ -75,6 +75,7 @@
       		grade:[],//选课年级,"不限","大一","大二","大三","大四"
   				mession:String//主要任务
       		status:Number//课题打分完成情况,
+					uid:String//教师id
     		},
   			...
   		]
@@ -212,6 +213,7 @@
       		grade:[],//选课年级,"不限","大一","大二","大三","大四"
   				mession:String//主要任务
       		status:Number//课题打分完成情况
+  				uid:String//教师id
       		name:String//教师姓名
       		tel:String//教师手机号
       		mail:String//教师邮箱
@@ -287,7 +289,8 @@
       	direction:[]//所属专业,"不限","系统与技术","数字动漫","网络安全","数字信息处理","嵌入式技术"
       	grade:[],//选课年级,"不限","大一","大二","大三","大四"
   			mession:String//主要任务,
-				url:String//任务书url
+				url:String//任务书url，
+				uid:String//教师id
     }
 }
 ```
