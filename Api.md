@@ -230,7 +230,7 @@
 
 ``` json
 {
-    URL: "/delete",
+    URL: "/topic/delete",
     method: "get",
     param: {
       	tid:String//课题id
