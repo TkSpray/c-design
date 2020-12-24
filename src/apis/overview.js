@@ -1,11 +1,11 @@
 import axios from '../axios'
 
 export async function GetTopic() {
-    const res = await axios.get('home/gettopic')
+    const res = await axios.get('/topic/get-all')
     return res.data
 }
 
 export async function DeleteTopic(params) {
-    const res = await axios.get('home/deletetopic', params)
+    const res = await axios.get('/topic/delete', params)
     return res.data
 }

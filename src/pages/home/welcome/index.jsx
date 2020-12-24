@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
     Table,
     Tag,
@@ -18,6 +18,7 @@ import './index.scss'
 import ShowStatus from '../../../components/ShowStatus'
 import { GetMyTopic, GetMember, SubmitScore } from '../../../apis/home'
 import { DeleteTopic } from '../../../apis/overview'
+import { UserContext } from '../../../index'
 const Home = props => {
     const [drawerShow, setShow] = useState(false)
     const [detail, setDetail] = useState({})
@@ -27,25 +28,15 @@ const Home = props => {
     const [memberlist, setMemberlist] = useState([])
     const [loading, setLoading] = useState(true)
     const [memberLoading, setMemberloading] = useState(true)
+    const user = useContext(UserContext)
 
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 16 }
     }
-
-    useEffect(() => {
-        getTopicList()
-    }, [drawerShow])
-
-    const showDrawer = record => {
-        setDetail(record)
-        setShow(true)
-        getMemberList(record.tid)
-    }
-
-    const getTopicList = async () => {
+    const getTopicList = async uid => {
         try {
-            const res = await GetMyTopic()
+            const res = await GetMyTopic(uid)
             if (res.code === 0) {
                 setTopiclist(res.data)
                 setLoading(false)
@@ -55,6 +46,16 @@ const Home = props => {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    useEffect(() => {
+        getTopicList(user.userState.uid)
+    }, [user.userState.uid])
+
+    const showDrawer = record => {
+        setDetail(record)
+        setShow(true)
+        getMemberList(record.tid)
     }
 
     const getMemberList = async tid => {
@@ -72,13 +73,14 @@ const Home = props => {
     }
     const onClose = async () => {
         setShow(false)
+        await getTopicList(user.userState.uid)
     }
     const confirmDelete = async tid => {
         message.loading({ content: '删除中', key: 'Delete' })
         try {
             const res = await DeleteTopic({ tid })
             if (res.code === 0) {
-                await getTopicList()
+                await getTopicList(user.userState.uid)
                 message.success({ content: '删除成功', key: 'Delete' })
             } else {
                 message.error({ content: res.msg || '删除失败', key: 'Delete' })

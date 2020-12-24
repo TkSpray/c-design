@@ -1,7 +1,7 @@
 // 使用 Mock
 import Mock from './mock'
 
-export default Mock.mock('/api/user/login', 'get', {
+export default Mock.mock('/login', 'get', {
     code: 0,
     data: {
         uid: '1',

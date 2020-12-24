@@ -2,7 +2,7 @@ import Mock from './mock'
 
 const { mock } = Mock
 
-export const GetTopic = mock('/api/home/gettopic', 'get', {
+export const GetTopic = mock('/topic/get-all', 'get', {
     code: 0,
     data: {
         topiclist: [
@@ -95,7 +95,7 @@ export const GetTopic = mock('/api/home/gettopic', 'get', {
     msg: ''
 })
 
-export const DeleteTopic = mock('/api/home/deletetopic', {
+export const DeleteTopic = mock('/topic/delete', {
     code: 0,
     data: {},
     msg: ''

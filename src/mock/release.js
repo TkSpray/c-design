@@ -2,7 +2,7 @@ import Mock from './mock'
 
 const { mock } = Mock
 
-export const Release = mock('/api/home/release', {
+export const Release = mock('/topic/add', {
     code: 0,
     data: {},
     msg: ''

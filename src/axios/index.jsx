@@ -3,7 +3,6 @@ import qs from 'qs'
 import { message } from 'antd'
 
 const axiosInstance = axios.create({
-    baseURL: '/api',
     withCredentials: true,
     //请求前处理数据
     transformRequest: [
