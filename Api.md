@@ -16,7 +16,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/login",
     method: "get",
     param: {
       	username:String //用户名
@@ -49,7 +49,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/topic/get-by-teacher",
     method: "get",
     param: {
       	uid:String//用户id
@@ -83,13 +83,40 @@
 }
 ```
 
+<<<<<<< HEAD
+=======
+#### 删除课题
+
+@request
+
+``` json
+{
+    URL: "/topic/delete",
+    method: "get",
+    param: {
+      	tid:String//课题id
+    }
+}
+```
+
+@return
+
+``` json
+{
+    status_code: Number,
+    msg: String,
+    data: {}
+}
+```
+
+>>>>>>> c022b624b372e9aa9a13bb04fb2cbd92ab7575ee
 #### 拉取课题成员详情
 
 @request
 
 ```json
 {
-    URL: "",
+    URL: "/student/get-by-topic",
     method: "get",
     param: {
       	tid:String//课题id
@@ -133,7 +160,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/student/add-score",
     method: "post",
     param: {
       	student:[
@@ -168,7 +195,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/topic/get-all",
     method: "get",
 }
 ```
@@ -206,7 +233,7 @@
 
 ``` json
 {
-    URL: "",
+    URL: "/topic/delete",
     method: "get",
     param: {
       	tid:String//课题id
@@ -232,7 +259,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/topic/add-taskbook",
     method: "post",
     param: {}
 }
@@ -256,7 +283,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/topic/add",
     method: "post",
     param: {
       	topic:String//课题名称,
@@ -288,7 +315,7 @@
 
 ```json
 {
-    URL: "",
+    URL: "/user/get-all",
     method: "get",
   	param:{}
 }
@@ -321,7 +348,7 @@
 
 ``` json
 {
-    URL: "",
+    URL: "/user/alter",
     method: "post",
   	param:{
   				uid:String//教师id
@@ -350,7 +377,7 @@
 
 ``` json
 {
-    URL: "",
+    URL: "/user/add",
     method: "post",
   	param:{
       		name:String//教师姓名
@@ -378,7 +405,7 @@
 
 ``` json
 {
-    URL: "",
+    URL: "/user/delete",
     method: "get",
     param: {
       	uid:String//教师id
