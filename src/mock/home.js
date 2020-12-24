@@ -2,7 +2,7 @@ import Mock from './mock'
 
 const { mock } = Mock
 
-export const GetTopic = mock('/topic/get-by-teacher', 'get', {
+export const GetTopic = mock('/api/topic/get-by-teacher', 'get', {
     code: 0,
     msg: '',
     data: {
@@ -74,7 +74,7 @@ export const GetTopic = mock('/topic/get-by-teacher', 'get', {
     }
 })
 
-export const GetMember = mock('/student/get-by-topic', 'get', {
+export const GetMember = mock('/api/student/get-by-topic', 'get', {
     code: 0,
     msg: '',
     data: {
@@ -136,7 +136,7 @@ export const GetMember = mock('/student/get-by-topic', 'get', {
     }
 })
 
-export const Release = mock('/student/add-score', {
+export const Release = mock('/api/student/add-score', {
     code: 0,
     data: {},
     msg: ''

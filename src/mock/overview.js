@@ -2,7 +2,7 @@ import Mock from './mock'
 
 const { mock } = Mock
 
-export const GetTopic = mock('/topic/get-all', 'get', {
+export const GetTopic = mock('/api/topic/get-all', 'get', {
     code: 0,
     data: {
         topiclist: [
