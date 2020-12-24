@@ -1,9 +1,12 @@
 // 使用 Mock
-import Mock from 'mockjs'
+import Mock from './mock'
+
 export default Mock.mock('/api/user/login', 'get', {
     code: 0,
     data: {
-        role: ['管理员', '老师']
+        uid: '1',
+        name: '张翔',
+        role: false
     },
     msg: '登录成功'
 })

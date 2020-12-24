@@ -1,26 +1,27 @@
-import React from 'react'
-import axios from '../../axios'
+import React, { useContext, useReducer } from 'react'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { Login } from '../../apis/login'
+import { UserContext } from '../../index'
 
 import './index.scss'
 import { useHistory } from 'react-router'
 
-const LoginForm = val => {
-    const { username, password } = val
+const LoginForm = props => {
+    const { username, password } = props
     const history = useHistory()
+    const userContext = useContext(UserContext)
+
     const loginSubmit = async () => {
         try {
-            let res = await axios({
-                url: 'user/login',
-                data: {
-                    username: username,
-                    password: password
-                }
+            const res = await Login({
+                username: username,
+                password: password
             })
-            if (res.data.code === 0) {
-                message.success(res.data.msg)
-                history.push('/home')
+            if (res.code === 0) {
+                message.success('登录成功')
+                userContext.stateDispatch({ type: 'SUCCESS', data: res.data })
+                history.push('/home/welcome')
             } else {
                 message.error('登录失败')
             }
@@ -28,6 +29,7 @@ const LoginForm = val => {
             console.log(err)
         }
     }
+
     return (
         <div className="login-form">
             <Form

@@ -1,12 +1,19 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table, Tag, Space, Button, message, Popconfirm, Drawer, Divider, Descriptions } from 'antd'
 import { useHistory } from 'react-router-dom'
 import './index.scss'
 import { PlusOutlined } from '@ant-design/icons'
+import { GetTopic, DeleteTopic } from '../../../apis/overview'
 const Overview = props => {
     const [drawerShow, setShow] = useState(false)
     const [detail, setDetail] = useState({})
     const history = useHistory()
+    const [topiclist, setTopiclist] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        getTopicList()
+    }, [])
     const showDrawer = record => {
         setDetail(record)
         setShow(true)
@@ -15,10 +22,34 @@ const Overview = props => {
     const onClose = () => {
         setShow(false)
     }
-    const confirmDelete = () => {
-        message.success('删除成功')
+    const confirmDelete = async tid => {
+        message.loading({ content: '删除中', key: 'Delete' })
+        try {
+            const res = await DeleteTopic({ tid })
+            if (res.code === 0) {
+                await getTopicList()
+                message.success({ content: '删除成功', key: 'Delete' })
+            } else {
+                message.error({ content: res.msg || '删除失败', key: 'Delete' })
+            }
+        } catch (e) {
+            message.error({ content: '删除失败', key: 'Delete' })
+        }
     }
 
+    const getTopicList = async () => {
+        try {
+            const res = await GetTopic()
+            if (res.code === 0) {
+                setTopiclist(res.data.topiclist)
+                setLoading(false)
+            } else {
+                message.error('获取数据失败')
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
     const columns = [
         {
             title: '课题名称',
@@ -83,7 +114,7 @@ const Overview = props => {
                 <Space size="middle">
                     <Popconfirm
                         title="确认删除?"
-                        onConfirm={confirmDelete}
+                        onConfirm={() => confirmDelete(record.tid)}
                         okText="确认"
                         cancelText="取消"
                     >
@@ -96,94 +127,8 @@ const Overview = props => {
         }
     ]
 
-    const data = [
-        {
-            key: '1',
-            name: '俯冲',
-            tel: 18888888832,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师', '管理员'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字信息处理', '系统与技术'],
-            grade: ['大一', '大二', '大三', '大四'],
-            mession: '擦擦擦测测',
-            status: 1
-        },
-        {
-            key: '2',
-            name: '王伟的',
-            tel: 18999998842,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['管理员'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫'],
-            grade: ['大一'],
-            mession: '擦擦擦测测',
-            status: 1
-        },
-        {
-            key: '3',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫', '网络安全'],
-            grade: ['大一', '大二'],
-            mession: '擦擦擦测测',
-            status: 0
-        },
-        {
-            key: '4',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫'],
-            grade: ['不限'],
-            mession: '擦擦擦测测',
-            status: 0
-        },
-        {
-            key: '5',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫', '数字信息处理'],
-            grade: ['大一'],
-            mession: '擦擦擦测测',
-            status: 1
-        },
-        {
-            key: '6',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            status: 0,
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫'],
-            grade: ['大一'],
-            mession: '擦擦擦测测'
-        }
-    ]
     return (
-        <div style={{ padding: 24, minHeight: 360, background: '#fff', margin: '24px' }}>
+        <div className="content-wrapper">
             <div className="content-header">
                 <span className="content-title">课题列表</span>
                 <Button
@@ -194,7 +139,7 @@ const Overview = props => {
                     课题发布
                 </Button>
             </div>
-            <Table columns={columns} dataSource={data} />
+            <Table columns={columns} dataSource={topiclist} loading={loading} />
             <Drawer
                 width={360}
                 placement="right"

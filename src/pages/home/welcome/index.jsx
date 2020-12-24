@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Table,
     Tag,
@@ -9,39 +9,86 @@ import {
     Drawer,
     Divider,
     Descriptions,
-    Row,
-    Col,
-    Statistic,
-    Card,
     InputNumber,
     Modal,
-    Form
+    Form,
+    Spin
 } from 'antd'
 import './index.scss'
+import ShowStatus from '../../../components/ShowStatus'
+import { GetMyTopic, GetMember, SubmitScore } from '../../../apis/home'
+import { DeleteTopic } from '../../../apis/overview'
 const Home = props => {
     const [drawerShow, setShow] = useState(false)
     const [detail, setDetail] = useState({})
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [form] = Form.useForm()
+    const [topiclist, setTopiclist] = useState({})
+    const [memberlist, setMemberlist] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [memberLoading, setMemberloading] = useState(true)
 
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 16 }
     }
 
+    useEffect(() => {
+        getTopicList()
+    }, [drawerShow])
+
     const showDrawer = record => {
         setDetail(record)
         setShow(true)
+        getMemberList(record.tid)
     }
 
-    const onClose = () => {
+    const getTopicList = async () => {
+        try {
+            const res = await GetMyTopic()
+            if (res.code === 0) {
+                setTopiclist(res.data)
+                setLoading(false)
+            } else {
+                message.error('获取数据失败')
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const getMemberList = async tid => {
+        try {
+            const res = await GetMember({ tid })
+            if (res.code === 0) {
+                setMemberlist(res.data.stulist)
+                setMemberloading(false)
+            } else {
+                message.error('获取学生数据失败')
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    const onClose = async () => {
         setShow(false)
     }
-    const confirmDelete = () => {
-        message.success('删除成功')
+    const confirmDelete = async tid => {
+        message.loading({ content: '删除中', key: 'Delete' })
+        try {
+            const res = await DeleteTopic({ tid })
+            if (res.code === 0) {
+                await getTopicList()
+                message.success({ content: '删除成功', key: 'Delete' })
+            } else {
+                message.error({ content: res.msg || '删除失败', key: 'Delete' })
+            }
+        } catch (e) {
+            message.error({ content: '删除失败', key: 'Delete' })
+        }
     }
 
-    const showModal = record => {
+    const showModal = async record => {
         const { name, stuId, score } = record
         const student = [{ name, stuId, score }]
 
@@ -60,12 +107,20 @@ const Home = props => {
     }
 
     const handleOk = async () => {
-        console.log(form.getFieldsValue(), 1)
         try {
-            await form.validateFields()
-            message.success('保存成功')
-            setIsModalVisible(false)
-        } catch (e) {}
+            const values = await form.validateFields()
+            message.loading({ content: '保存中', key: 'Ok' })
+            const res = await SubmitScore(values)
+            if (res.code === 0) {
+                await getMemberList()
+                message.success({ content: '保存成功', key: 'Ok' })
+                setIsModalVisible(false)
+            } else {
+                message.error({ content: res.msg || '保存失败', key: 'Ok' })
+            }
+        } catch (e) {
+            message.error({ content: '保存失败', key: 'Ok' })
+        }
     }
 
     const columns = [
@@ -123,7 +178,7 @@ const Home = props => {
                 <Space size="middle">
                     <Popconfirm
                         title="确认删除?"
-                        onConfirm={confirmDelete}
+                        onConfirm={() => confirmDelete(record.tid)}
                         okText="确认"
                         cancelText="取消"
                     >
@@ -133,94 +188,6 @@ const Home = props => {
                     </Popconfirm>
                 </Space>
             )
-        }
-    ]
-
-    const data = [
-        {
-            key: '1',
-            name: '俯冲',
-            tel: 18888888832,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师', '管理员'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字信息处理', '系统与技术'],
-            grade: ['大一', '大二', '大三', '大四'],
-            mession:
-                '擦擦擦测测擦擦擦测测擦擦擦测擦擦擦测测擦擦擦测测擦擦擦测测测擦擦擦测测擦擦擦测测擦擦擦测测擦擦擦测测擦擦擦测测擦擦擦测测擦擦擦测测擦擦擦测测',
-            status: 1
-        },
-        {
-            key: '2',
-            name: '王伟的',
-            tel: 18999998842,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['管理员'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫'],
-            grade: ['大一'],
-            mession: '擦擦擦测测',
-            status: 1
-        },
-        {
-            key: '3',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫', '网络安全'],
-            grade: ['大一', '大二'],
-            mession: '擦擦擦测测',
-            status: 0
-        },
-        {
-            key: '4',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫'],
-            grade: ['不限'],
-            mession: '擦擦擦测测',
-            status: 0
-        },
-        {
-            key: '5',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫', '数字信息处理'],
-            grade: ['大一'],
-            mession: '擦擦擦测测',
-            status: 1
-        },
-        {
-            key: '6',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: ['老师'],
-            status: 0,
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: ['数字动漫'],
-            grade: ['大一'],
-            mession: '擦擦擦测测'
         }
     ]
 
@@ -245,10 +212,10 @@ const Home = props => {
             dataIndex: 'status',
             key: 'status',
             render: (text, record) =>
-                record.status ? (
-                    <a href={record.status}>下载材料</a>
+                record.url ? (
+                    <a href={record.url}>下载材料</a>
                 ) : (
-                    <Tag color="warning">未提交</Tag>
+                    'url' in record && <Tag color="warning">未提交</Tag>
                 )
         },
         {
@@ -274,190 +241,89 @@ const Home = props => {
         }
     ]
 
-    const groupData = [
-        {
-            key: '1',
-            name: '俯冲',
-            stuId: 2018091608000,
-            department: '信息与软件工程学院',
-            direction: '数字信息处理',
-            status: 1,
-            score: 0,
-            children: [
-                {
-                    key: '2',
-                    name: '王伟的',
-                    stuId: 2018091608000,
-                    department: '信息与软件工程学院',
-                    topic: '后台管理系统',
-                    course: '综合课程设计I',
-                    direction: '数字动漫',
-                    score: 0
-                },
-                {
-                    key: '3',
-                    name: '张翔',
-                    stuId: 2018091608000,
-                    department: '信息与软件工程学院',
-                    topic: '后台管理系统',
-                    course: '综合课程设计I',
-                    direction: '网络安全',
-                    score: 0
-                }
-            ]
-        },
-        {
-            key: '2',
-            name: '王伟的',
-            stuId: 2018091608000,
-            department: '信息与软件工程学院',
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: '数字动漫',
-            status: 1,
-            score: 0,
-            children: []
-        },
-        {
-            key: '3',
-            name: '张翔',
-            stuId: 2018091608000,
-            department: '信息与软件工程学院',
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: '网络安全',
-            status: 0,
-            score: 0,
-            children: []
-        },
-        {
-            key: '4',
-            name: '张翔',
-            stuId: 2018091608000,
-            department: '信息与软件工程学院',
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: '数字动漫',
-            status: 0,
-            score: 0,
-            children: []
-        },
-        {
-            key: '5',
-            name: '张翔',
-            stuId: 2018091608000,
-            department: '信息与软件工程学院',
-            topic: '后台管理系统',
-            course: '综合课程设计I',
-            direction: '数字信息处理',
-            status: 1,
-            score: 0,
-            children: []
-        }
-    ]
     return (
         <>
-            <Row gutter={16} style={{ margin: '16px auto', padding: '0 16px' }}>
-                <Col span={8}>
-                    <Card>
-                        <Statistic
-                            title="课题总数"
-                            value={39}
-                            valueStyle={{ fontSize: 36, fontWeight: 500 }}
-                        />
-                    </Card>
-                </Col>
-                <Col span={8}>
-                    <Card>
-                        <Statistic
-                            title="已完成课题"
-                            value={28}
-                            valueStyle={{ fontSize: 36, fontWeight: 500, color: 'green' }}
-                        />
-                    </Card>
-                </Col>
-                <Col span={8}>
-                    <Card>
-                        <Statistic
-                            title="未完成课题"
-                            value={12}
-                            valueStyle={{ fontSize: 36, fontWeight: 500, color: 'red' }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
-            <div style={{ padding: 24, minHeight: 360, background: '#fff', margin: '18px 24px' }}>
-                <Table columns={columns} dataSource={data} />
-                <Drawer
-                    width={960}
-                    placement="right"
-                    closable={false}
-                    onClose={onClose}
-                    visible={drawerShow}
-                >
-                    <Descriptions title="课题信息" column={3}>
-                        <Descriptions.Item label="课题名称">{detail.topic}</Descriptions.Item>
-                        <Descriptions.Item label="专业方向">
-                            {detail.direction?.map(tag => {
-                                return <Tag key={tag}>{tag}</Tag>
-                            })}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="课程名称">{detail.course}</Descriptions.Item>
-                        <Descriptions.Item label="选课年级">
-                            {detail.grade?.map(tag => {
-                                return <Tag key={tag}>{tag}</Tag>
-                            })}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="课题状态">
-                            {
-                                <Tag color={detail.status ? 'green' : 'warning'}>
-                                    {detail.status ? '已完成' : '未完成'}
-                                </Tag>
-                            }
-                        </Descriptions.Item>
-                    </Descriptions>
+            <Spin spinning={loading}>
+                <ShowStatus status={{ done: topiclist.done, todo: topiclist.todo }} />
+                <div className="content-wrapper" style={{ margin: '18px 24px' }}>
+                    <Table columns={columns} dataSource={topiclist.topiclist} />
+                    <Drawer
+                        width={960}
+                        placement="right"
+                        closable={false}
+                        onClose={onClose}
+                        visible={drawerShow}
+                    >
+                        <Descriptions title="课题信息" column={3}>
+                            <Descriptions.Item label="课题名称">{detail.topic}</Descriptions.Item>
+                            <Descriptions.Item label="专业方向">
+                                {detail.direction?.map(tag => {
+                                    return <Tag key={tag}>{tag}</Tag>
+                                })}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="课程名称">{detail.course}</Descriptions.Item>
+                            <Descriptions.Item label="选课年级">
+                                {detail.grade?.map(tag => {
+                                    return <Tag key={tag}>{tag}</Tag>
+                                })}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="课题状态">
+                                {
+                                    <Tag color={detail.status ? 'green' : 'warning'}>
+                                        {detail.status ? '已完成' : '未完成'}
+                                    </Tag>
+                                }
+                            </Descriptions.Item>
+                        </Descriptions>
 
-                    <Descriptions column={1}>
-                        <Descriptions.Item label="主要任务">{detail.mession}</Descriptions.Item>
-                    </Descriptions>
-                    <Divider />
-                    <Table columns={groupColumns} dataSource={groupData} />
-                </Drawer>
-                <Modal
-                    title="小组打分"
-                    visible={isModalVisible}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
-                    centered
-                    okText="确认"
-                    cancelText="取消"
-                    destroyOnClose
-                >
-                    <Form form={form} preserve={false} requiredMark={false} {...layout}>
-                        <Form.List name="student">
-                            {fields => (
-                                <>
-                                    {fields.map(field => (
-                                        <Form.Item
-                                            {...field}
-                                            name={[field.name, 'score']}
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: '请输入分数'
+                        <Descriptions column={1}>
+                            <Descriptions.Item label="主要任务">{detail.mession}</Descriptions.Item>
+                        </Descriptions>
+                        <Divider />
+                        <Table
+                            columns={groupColumns}
+                            dataSource={memberlist}
+                            loading={memberLoading}
+                        />
+                    </Drawer>
+                    <Modal
+                        title="小组打分"
+                        visible={isModalVisible}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                        centered
+                        okText="确认"
+                        cancelText="取消"
+                        destroyOnClose
+                    >
+                        <Form form={form} preserve={false} requiredMark={false} {...layout}>
+                            <Form.List name="student">
+                                {fields => (
+                                    <>
+                                        {fields.map(field => (
+                                            <Form.Item
+                                                {...field}
+                                                name={[field.name, 'score']}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: '请输入分数'
+                                                    }
+                                                ]}
+                                                label={
+                                                    form.getFieldValue('student')[field.name].name
                                                 }
-                                            ]}
-                                            label={form.getFieldValue('student')[field.name].name}
-                                        >
-                                            <InputNumber placeholder="分数" />
-                                        </Form.Item>
-                                    ))}
-                                </>
-                            )}
-                        </Form.List>
-                    </Form>
-                </Modal>
-            </div>
+                                            >
+                                                <InputNumber placeholder="分数" />
+                                            </Form.Item>
+                                        ))}
+                                    </>
+                                )}
+                            </Form.List>
+                        </Form>
+                    </Modal>
+                </div>
+            </Spin>
         </>
     )
 }

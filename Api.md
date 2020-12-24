@@ -83,30 +83,6 @@
 }
 ```
 
-#### 删除课题
-
-@request
-
-``` json
-{
-    URL: "",
-    method: "get",
-    param: {
-      	tid:String//课题id
-    }
-}
-```
-
-@return
-
-``` json
-{
-    status_code: Number,
-    msg: String,
-    data: {}
-}
-```
-
 #### 拉取课题成员详情
 
 @request
@@ -283,7 +259,6 @@
     URL: "",
     method: "post",
     param: {
-      	tid:String//课题id
       	topic:String//课题名称,
       	course:String//课程名称,"综合课程设计I","综合课程设计II","综合课程设计III",
       	direction:[]//所属专业,"不限","系统与技术","数字动漫","网络安全","数字信息处理","嵌入式技术"

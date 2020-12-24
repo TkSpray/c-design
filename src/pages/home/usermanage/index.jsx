@@ -1,52 +1,78 @@
-import React, { useState } from 'react'
-import {
-    Table,
-    Tag,
-    Space,
-    Button,
-    Modal,
-    Form,
-    Input,
-    Select,
-    Switch,
-    message,
-    Popconfirm
-} from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Table, Tag, Space, Button, Modal, Form, Input, Switch, message, Popconfirm } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import './index.scss'
+import { GetUser, UserControl, DeleteUser } from '../../../apis/usermanage'
 
 const UserManage = props => {
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [form] = Form.useForm()
+    const [userlist, setUserlist] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const layout = {
         labelCol: { span: 5 },
         wrapperCol: { span: 16 }
     }
 
-    const departmentOptions = [
-        { label: '信息与软件工程学院', value: '信息与软件工程学院' },
-        { label: '外国语学院', value: '外国语学院' }
-    ]
+    useEffect(() => {
+        getForm()
+    }, [])
 
+    const getForm = async () => {
+        try {
+            const res = await GetUser()
+            if (res.code === 0) {
+                console.log(res)
+                setUserlist(res.data.userlist)
+                setLoading(false)
+            } else {
+                message.error('获取用户列表失败')
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
     const showModal = () => {
         setIsModalVisible(true)
     }
 
     const handleOk = async () => {
         try {
-            await form.validateFields()
-            message.success('保存成功')
-            setIsModalVisible(false)
-        } catch (e) {}
+            const values = await form.validateFields()
+            let editflag = values.uid ? true : false
+            !editflag && delete values.uid
+            message.loading({ content: '保存中', key: 'Ok' })
+            const res = await UserControl(values, editflag)
+            if (res.code === 0) {
+                await getForm()
+                message.success({ content: '保存成功', key: 'Ok' })
+                setIsModalVisible(false)
+            } else {
+                message.error({ content: res.msg || '保存失败', key: 'Ok' })
+            }
+        } catch (e) {
+            message.error({ content: '保存失败', key: 'Ok' })
+        }
     }
 
     const handleCancel = () => {
         setIsModalVisible(false)
     }
 
-    const confirmDelete = () => {
-        message.success('删除成功')
+    const confirmDelete = async uid => {
+        message.loading({ content: '删除中', key: 'Delete' })
+        try {
+            const res = await DeleteUser({ uid })
+            if (res.code === 0) {
+                await getForm()
+                message.success({ content: '删除成功', key: 'Delete' })
+            } else {
+                message.error({ content: res.msg || '删除失败', key: 'Delete' })
+            }
+        } catch (e) {
+            message.error({ content: '删除失败', key: 'Delete' })
+        }
     }
 
     const editInfo = record => {
@@ -76,8 +102,8 @@ const UserManage = props => {
             render: tag => (
                 <>
                     {
-                        <Tag color={tag === '老师' ? 'geekblue' : 'green'} key={tag}>
-                            {tag.toUpperCase()}
+                        <Tag color={tag ? 'geekblue' : 'green'} key={tag}>
+                            {tag ? '管理员' : '教师'}
                         </Tag>
                     }
                 </>
@@ -94,7 +120,7 @@ const UserManage = props => {
                     </Button>
                     <Popconfirm
                         title="确认删除?"
-                        onConfirm={confirmDelete}
+                        onConfirm={() => confirmDelete(record.uid)}
                         okText="确认"
                         cancelText="取消"
                     >
@@ -107,67 +133,8 @@ const UserManage = props => {
         }
     ]
 
-    const data = [
-        {
-            key: '1',
-            name: '俯冲',
-            tel: 18888888832,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '管理员'
-        },
-        {
-            key: '2',
-            name: '王伟的',
-            tel: 18999998842,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '管理员'
-        },
-        {
-            key: '3',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '老师'
-        },
-        {
-            key: '4',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '老师'
-        },
-        {
-            key: '5',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '老师'
-        },
-        {
-            key: '6',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '老师'
-        },
-        {
-            key: '7',
-            name: '张翔',
-            tel: 17788889932,
-            mail: 'fuchong@uestc.com',
-            department: '信息与软件工程学院',
-            role: '老师'
-        }
-    ]
-
     return (
-        <div style={{ padding: 24, minHeight: 360, background: '#fff', margin: '24px' }}>
+        <div className="content-wrapper">
             <div className="content-header">
                 <span className="content-title">用户列表</span>
                 <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
@@ -175,7 +142,7 @@ const UserManage = props => {
                 </Button>
             </div>
 
-            <Table columns={columns} dataSource={data} />
+            <Table columns={columns} dataSource={userlist} loading={loading} />
             <Modal
                 title="用户信息"
                 visible={isModalVisible}
@@ -194,13 +161,42 @@ const UserManage = props => {
                     }}
                     preserve={false}
                 >
-                    <Form.Item name="name" label="姓名" rules={[{ required: true }]}>
+                    <Form.Item name="uid" hidden></Form.Item>
+                    <Form.Item
+                        name="name"
+                        label="姓名"
+                        rules={[
+                            {
+                                required: true
+                            }
+                        ]}
+                    >
                         <Input placeholder="请输入姓名" />
                     </Form.Item>
-                    <Form.Item name="tel" label="手机号" rules={[{ required: true }]}>
+                    <Form.Item
+                        name="tel"
+                        label="手机号"
+                        rules={[
+                            {
+                                required: true,
+                                pattern: /^1[3-9]\d{9}$/,
+                                message: '请输入正确的手机号'
+                            }
+                        ]}
+                    >
                         <Input placeholder="请输入手机号" />
                     </Form.Item>
-                    <Form.Item name="mail" label="邮箱" rules={[{ required: true }]}>
+                    <Form.Item
+                        name="mail"
+                        label="邮箱"
+                        rules={[
+                            {
+                                required: true,
+                                pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+                                message: '请输入正确的邮箱地址'
+                            }
+                        ]}
+                    >
                         <Input placeholder="请输入邮箱地址" />
                     </Form.Item>
                     <Form.Item name="password" label="密码" rules={[{ required: true }]}>

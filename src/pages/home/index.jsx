@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Layout, Menu, Avatar, Dropdown, PageHeader } from 'antd'
 import { Switch, Route, Redirect, withRouter, NavLink, useLocation, Link } from 'react-router-dom'
-import Footer from '../../components/footer'
+import Footer from '../../components/Footer'
 import './index.scss'
 import route from '../../routes/index'
 import UESTC from '../../assets/images/UESTC.png'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
+import { UserContext } from '../../index'
 
 const { Header, Sider, Content } = Layout
 
 const App = props => {
-    let location = useLocation()
+    const location = useLocation()
     const [path, setPath] = useState(location.pathname)
+    const user = useContext(UserContext)
     useEffect(() => {
         setPath(location.pathname)
     }, [location])
@@ -54,6 +56,9 @@ const App = props => {
                 </div>
                 <Menu selectedKeys={[path]} mode="inline">
                     {route.map(item => {
+                        if (item.name === '用户管理' && !user.userState.role) {
+                            return <></>
+                        }
                         return (
                             <Menu.Item key={item.path} icon={item.icon}>
                                 <NavLink to={item.path}>{item.name}</NavLink>
@@ -87,13 +92,16 @@ const App = props => {
                                 style={{ backgroundColor: '#1890ff' }}
                                 icon={<UserOutlined />}
                             />
-                            <span>管理员</span>
+                            <span>{user.userState.name}</span>
                         </div>
                     </Dropdown>
                 </Header>
                 <Content>
                     <Switch>
                         {route.map(item => {
+                            if (item.name === '用户管理' && !user.userState.role) {
+                                return <></>
+                            }
                             return (
                                 <Route
                                     exact

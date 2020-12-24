@@ -1,7 +1,7 @@
 import React from 'react'
 
-import LoginFrom from '../../components/loginForm'
-import Footer from '../../components/footer'
+import LoginFrom from '../../components/LoginForm'
+import Footer from '../../components/Footer'
 import './index.scss'
 
 const Login = () => {
