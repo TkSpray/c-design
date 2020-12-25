@@ -16,7 +16,7 @@
 
 ```json
 {
-    URL: "/login",
+    URL: "/user/login",
     method: "get",
     param: {
       	username:String //用户名
