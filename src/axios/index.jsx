@@ -8,8 +8,9 @@ const axiosInstance = axios.create({
     //请求前处理数据
     transformRequest: [
         function (data) {
-            data = qs.stringify(data)
-            return data
+            return qs.stringify(data, {
+                indices: false
+            })
         }
     ],
     paramsSerializer(params) {
@@ -18,7 +19,8 @@ const axiosInstance = axios.create({
         })
     }
 })
-
+axiosInstance.defaults.headers.post['Content-Type'] =
+    'application/x-www-form-urlencoded; charset=UTF-8'
 axiosInstance.interceptors.response.use(
     res => (res.status === 200 ? Promise.resolve(res) : Promise.reject(res)),
     // 服务器状态码不是200的情况

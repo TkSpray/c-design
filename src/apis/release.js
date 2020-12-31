@@ -1,8 +1,7 @@
 import axios from '../axios'
 
 export async function SubmitTopic(params) {
-    const res = await axios.post('/topic/add', params, {
-        headers: { 'Content-Type': 'application/json' }
-    })
+    console.log(params)
+    const res = await axios.post('/topic/add', params)
     return res.data
 }

@@ -6,6 +6,6 @@ export async function GetTopic() {
 }
 
 export async function DeleteTopic(params) {
-    const res = await axios.get('/topic/delete', params)
+    const res = await axios.get('/topic/delete', { params: params })
     return res.data
 }

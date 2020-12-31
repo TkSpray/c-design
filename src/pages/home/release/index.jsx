@@ -51,6 +51,10 @@ const Release = props => {
         form.resetFields()
     }
 
+    const normFile = e => {
+        return e && e.file.response?.data.url
+    }
+
     const getTeacher = async () => {
         try {
             const res = await GetUser()
@@ -67,11 +71,8 @@ const Release = props => {
         }
     }
     const uploadConfig = {
-        name: 'file',
-        action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-        headers: {
-            authorization: 'authorization-text'
-        },
+        name: 'uploadFile',
+        action: '/topic/add-taskbook',
         onChange(info) {
             if (info.file.status !== 'uploading') {
                 console.log(info.file, info.fileList)
@@ -158,7 +159,7 @@ const Release = props => {
                             autoSize={{ minRows: 5, maxRows: 10 }}
                         />
                     </Form.Item>
-                    <Form.Item name="url">
+                    <Form.Item name="url" getValueFromEvent={normFile}>
                         <Upload {...uploadConfig}>
                             <Button icon={<UploadOutlined />}>点击上传任务书</Button>
                         </Upload>

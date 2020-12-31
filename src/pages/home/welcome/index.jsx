@@ -36,7 +36,7 @@ const Home = props => {
     }
     const getTopicList = async uid => {
         try {
-            const res = await GetMyTopic(uid)
+            const res = await GetMyTopic({ uid })
             if (res.code === 0) {
                 setTopiclist(res.data)
                 setLoading(false)
@@ -49,7 +49,7 @@ const Home = props => {
     }
 
     useEffect(() => {
-        getTopicList(user.userState.uid)
+        getTopicList(user.userState.uid || 0)
     }, [user.userState.uid])
 
     const showDrawer = record => {

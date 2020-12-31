@@ -2,9 +2,10 @@ import React, { useReducer } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
-// import './mock'
 import Login from './pages/login'
 import Home from './pages/home'
+//mock数据
+// import './mock'
 
 export const UserContext = React.createContext({})
 
